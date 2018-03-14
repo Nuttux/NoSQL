@@ -1,0 +1,49 @@
+### PRACTICE 
+
+## FIND 
+
+db.usa_col.find({<where condition},{<what to display>})
+db.usa_col.find({<where condition>: {$gt / $gte / $lt / $lte / $ne / $in / $nin}}, {<what to display>})
+
+# Query examples:
+
+# Find all the states in USA?
+db.usa_col.find({},{'STATE.Name': 1, _id: 0}).pretty()
+
+# Find all cities in USA?
+db.usa_col.find({},{_id: 1}).pretty()
+
+# Find California 
+db.usa_col.find({'STATE.Name': 'California'}, {'STATE.Name': 1, _id: 0})
+
+# Find all cities with population metro >100
+db.usa_col.find({'Population.Metropolitan': {$gt:100}}, {'Population.Metropolitan':1, _id:1})
+
+# Find the documents tickets sold which price is bigger than 200.
+db.usa_col.find({'route.price': {$gt: 200}}).pretty()
+
+# Find all the cities with Population Metro > 100 and Municipal >= 200 
+db.usa_col.find({$and: [{'Population.Metropolitan': {$gte:200}}, {'Population.Municipal': {$gte:200}}]},
+{_id:1, 'Population.Municipal':1, 'Population.Metropolitan':1}).pretty()
+
+
+## AGGREGATE 
+
+# aggregated population by state name
+db.usa_col.aggregate([
+                        { $group: { _id: '$STATE.Name', 
+                          total_pop: {$sum: {$add: ['$Population.Municipal','$Population.Metropolitan'] } } } },
+                        { $sort: {total_pop: -1}}
+                      ])
+
+db.usa_col.find({'Population.Immigrants.German':true}, {})
+                      
+db.usa_col.aggregate([
+                        {$match: {'Population.Immigrants.German':true} },
+                        {$group: { _id: '$_id', 
+                          total_pop: {$sum: {$add: ['$Population.Municipal','$Population.Metropolitan'] } } } },
+                        {$sort: {total_pop: -1}}
+                      ]).pretty()
+
+
+# Distinct/ Remove/ Delete 
