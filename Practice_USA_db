@@ -1,5 +1,6 @@
 ### PRACTICE 
 
+
 ## FIND 
 
 db.usa_col.find({<where condition},{<what to display>})
@@ -45,5 +46,35 @@ db.usa_col.aggregate([
                         {$sort: {total_pop: -1}}
                       ]).pretty()
 
+db.usa_col.aggregate([ 
+                      {$group: {_id: null,
+                       total_size: {$sum: '$Size'} } }
+                      ])
+
+db.usa_col.find({'STATE.Notes.Notes': /lake/},
+                {'STATE.Notes.$': 1, _id:0}).pretty()
+
+
+
+## COUNT 
+
+db.usa_col.count()
+db.usa_col.find({'Population.Immigrants.German':true}).count()
 
 # Distinct/ Remove/ Delete 
+
+
+
+## PUSH 
+
+db.usa_col.update(
+                  {_id:'Santa Fe'},
+                  {$push : {'ZipCodes':88888}} 
+                  )
+
+db.usa_col.update(
+                  {_id:'Santa Fe'},
+                  {$pull : {'ZipCodes':88888} } 
+                  )
+
+db.usa_col.find({_id:'Santa Fe'}, {})
